@@ -7,6 +7,8 @@ import {FaGithub} from "react-icons/fa";
 import {SignInFlow} from "@/features/auth/types";
 import {useState} from "react";
 
+//35:43
+
 interface SignUpCardProps {
     setState: (state: SignInFlow) => void;
 }
