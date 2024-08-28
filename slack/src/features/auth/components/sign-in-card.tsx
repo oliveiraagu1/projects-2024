@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -7,6 +7,7 @@ import {FcGoogle} from "react-icons/fc";
 import {FaGithub} from "react-icons/fa";
 import {SignInFlow} from "@/features/auth/types";
 import {useAuthActions} from "@convex-dev/auth/react";
+import {TriangleAlert} from "lucide-react";
 
 interface SignInCardProps {
     setState: (state: SignInFlow) => void;
@@ -14,9 +15,21 @@ interface SignInCardProps {
 
 export const SignInCard = ({setState}: SignInCardProps) => {
     const { signIn } = useAuthActions();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const [pending, setPending] = useState(false);
+
+    const onPasswordSignIn = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setPending(true);
+        signIn("password", { email, password, flow: "signIn" })
+            .catch(() => {
+                setError("Invalid e-mail or password");
+            })
+            .finally(() => setPending(false));
+    }
 
     const onProviderSignIn = (value: "github" | "google") => {
         setPending(true);
@@ -33,8 +46,14 @@ export const SignInCard = ({setState}: SignInCardProps) => {
                     Use your e-mail or another service to continue
                 </CardDescription>
             </CardHeader>
+            {!!error && (
+                <div className='bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6'>
+                    <TriangleAlert className='size-4'/>
+                    <p>{error}</p>
+                </div>
+            )}
             <CardContent className="space-y-5 px-0 pb-0">
-                <form className="space-y-2.5">
+                <form onSubmit={onPasswordSignIn} className="space-y-2.5">
                     <Input
                         disabled={pending}
                         value={email}
