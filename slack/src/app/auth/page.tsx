@@ -1,10 +1,7 @@
+import {AuthScreen} from "@/features/auth/components/auth-screen";
 
-const SignInPage = () => {
-    return (
-        <div>
-            Sign in!
-        </div>
-    )
+const AuthPage = () => {
+    return <AuthScreen/>
 }
 
-export default SignInPage;
+export default AuthPage;

@@ -3,7 +3,6 @@
 import {useState} from "react";
 import {SignInFlow} from "@/features/auth/types";
 
-import {Button} from "@/components/ui/button";
 import {SignInCard} from "@/features/auth/components/sign-in-card";
 import {SignUpCard} from "@/features/auth/components/sign-up-card";
 
