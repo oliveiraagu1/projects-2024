@@ -1,10 +1,12 @@
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import {ConvexClientProvider} from '@/components/convex-client-provider';
-import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import {ConvexAuthNextjsServerProvider} from "@convex-dev/auth/nextjs/server";
 import "./globals.css";
 import {Modals} from "@/components/modals";
-import { Toaster } from "@/components/ui/sonner";
+import {Toaster} from "@/components/ui/sonner";
+import {ReactNode} from "react";
+import {JotProvider} from "@/components/jotai-provider";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -16,16 +18,24 @@ export const metadata: Metadata = {
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
-    children: React.ReactNode;
+    children: ReactNode;
 }>) {
     return (
         <ConvexAuthNextjsServerProvider>
             <html lang="en">
             <body className={inter.className}>
             <ConvexClientProvider>
-                <Toaster/>
-                <Modals/>
-                {children}
+                <JotProvider>
+                    <Toaster
+                        closeButton
+                        duration={3000}
+                        position='top-right'
+                        richColors
+                        theme='light'
+                    />
+                    <Modals/>
+                    {children}
+                </JotProvider>
             </ConvexClientProvider>
             </body>
             </html>
