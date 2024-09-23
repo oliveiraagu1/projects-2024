@@ -33,6 +33,11 @@ export const create = mutation({
             role: "admin"
         });
 
+        await ctx.db.insert("channels", {
+            name: "general",
+            workspaceId
+        })
+
         return workspaceId;
     }
 });
@@ -156,7 +161,7 @@ export const remove = mutation({
                 .collect()
         ]);
 
-        for(const member of members){
+        for (const member of members) {
             await ctx.db.delete(member._id);
         }
 
