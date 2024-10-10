@@ -12,6 +12,7 @@ import {Simulate} from "react-dom/test-utils";
 import {cn} from "@/lib/utils";
 import container from "parchment/src/blot/abstract/container";
 import Toolbar from "quill/modules/toolbar";
+import {EmojiPopover} from "@/components/emoji-popover";
 
 
 type EditorValue = {
@@ -68,9 +69,9 @@ const Editor = ({
             placeholder: placeholderRef.current,
             modules: {
                 toolbar: [
-                  ["bold", "italic", "strike"],
-                  ["link"],
-                  [{list: "ordered"}, {list: "bullet"}],
+                    ["bold", "italic", "strike"],
+                    ["link"],
+                    [{list: "ordered"}, {list: "bullet"}],
                 ],
                 keyboard: {
                     bindings: {
@@ -93,11 +94,11 @@ const Editor = ({
 
         };
 
-        const quill =  new Quill(editorContainer, options);
+        const quill = new Quill(editorContainer, options);
         quillRef.current = quill;
         quillRef.current.focus();
 
-        if(innerRef) {
+        if (innerRef) {
             innerRef.current = quill;
         }
 
@@ -115,11 +116,11 @@ const Editor = ({
                 container.innerHTML = "";
             }
 
-            if(quillRef.current) {
+            if (quillRef.current) {
                 quillRef.current = null;
             }
 
-            if(innerRef) {
+            if (innerRef) {
                 innerRef.current = null;
             }
         };
@@ -130,12 +131,18 @@ const Editor = ({
         setToolbarVisible((current) => !current);
         const toolbarElement = containerRef.current?.querySelector(".ql-toolbar");
 
-        if(toolbarElement) {
+        if (toolbarElement) {
             toolbarElement.classList.toggle("hidden");
         }
     }
 
-    const isEmpty = text.replace(/<(.|\n)*?>/g,"").trim().length === 0;
+    const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+
+    const onEmojiSelect = (emoji: any) => {
+        const quill = quillRef.current;
+
+        quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+    }
 
     return (
         <div className="flex flex-col">
@@ -144,7 +151,7 @@ const Editor = ({
             >
                 <div ref={containerRef} className="h-full ql-custom"/>
                 <div className="flex px-2 pb-2 z-[5]">
-                    <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"} >
+                    <Hint label={isToolbarVisible ? "Hide formatting" : "Show formatting"}>
                         <Button
                             disabled={disabled}
                             size="iconSm"
@@ -154,17 +161,15 @@ const Editor = ({
                             <PiTextAa className="size-4"/>
                         </Button>
                     </Hint>
-                    <Hint label="Emoji">
+                    <EmojiPopover onEmojiSelect={onEmojiSelect}>
                         <Button
                             disabled={disabled}
                             size="iconSm"
                             variant="ghost"
-                            onClick={() => {
-                            }}
                         >
                             <Smile className="size-4"/>
                         </Button>
-                    </Hint>
+                    </EmojiPopover>
                     {variant === "create" && (
                         <Hint label="Image">
                             <Button
@@ -209,11 +214,10 @@ const Editor = ({
                             size="iconSm"
                             className={cn(
                                 "ml-auto",
-                                 isEmpty
-                                     ? "bg-white hover:bg-white text-muted-foreground"
-                                     : "bg-[#007A5A] hover:bg-[#007A5A]/80 text-white"
+                                isEmpty
+                                    ? "bg-white hover:bg-white text-muted-foreground"
+                                    : "bg-[#007A5A] hover:bg-[#007A5A]/80 text-white"
                                 ,
-
                             )}
                         >
                             <MdSend className="size-4"/>
@@ -221,11 +225,17 @@ const Editor = ({
                     )}
                 </div>
             </div>
-            <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
-                <p>
-                    <strong>Shift + Return</strong> to add a new line
-                </p>
-            </div>
+            {variant === 'create' && (
+                <div className={cn(
+                    "p-2 text-[10px] text-muted-foreground flex justify-end opacity-0 transition",
+                    !isEmpty && "opacity-100",
+
+                )}>
+                    <p>
+                        <strong>Shift + Return</strong> to add a new line
+                    </p>
+                </div>
+            )}
         </div>
     )
 }
