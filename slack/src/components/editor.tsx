@@ -8,13 +8,10 @@ import {ImageIcon, Smile, XIcon} from "lucide-react";
 import {MdSend} from "react-icons/md";
 import {Hint} from './hint';
 import {Delta, Op} from "quill/core";
+import {cn} from "@/lib/utils";
+import {EmojiPopover} from "@/components/emoji-popover";
 
 import "quill/dist/quill.snow.css";
-import {Simulate} from "react-dom/test-utils";
-import {cn} from "@/lib/utils";
-import container from "parchment/src/blot/abstract/container";
-import Toolbar from "quill/modules/toolbar";
-import {EmojiPopover} from "@/components/emoji-popover";
 
 
 type EditorValue = {
@@ -82,7 +79,15 @@ const Editor = ({
                         enter: {
                             key: "Enter",
                             handler: () => {
-                                return;
+                                const text = quill.getText();
+                                const addedImage = imageElementRef.current?.files?.[0] || null;
+
+                                const isEmpty = !addedImage && text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+
+                                if (isEmpty) return;
+
+                                const body = JSON.stringify(quill.getContents());
+                                submitRef.current?.({body, image: addedImage});
                             }
                         },
                         shift_enter: {
@@ -140,7 +145,7 @@ const Editor = ({
         }
     }
 
-    const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+    const isEmpty = !image && text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
 
     const onEmojiSelect = (emoji: any) => {
         const quill = quillRef.current;
@@ -157,8 +162,11 @@ const Editor = ({
                 onChange={(event) => setImage(event.target.files![0])}
                 className="hidden"
             />
-            <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300
-                focus-within:shadow-sm transition bg-white"
+            <div
+                className={cn(
+                    "flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white",
+                    disabled && "opacity-50"
+                )}
             >
                 <div ref={containerRef} className="h-full ql-custom"/>
                 {!!image && (
@@ -221,14 +229,17 @@ const Editor = ({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => {
-                                }}
+                                onClick={onCancel}
                                 disabled={disabled}
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={() => {
+                                    onSubmit({
+                                        body: JSON.stringify(quillRef.current?.getContents()),
+                                        image,
+                                    })
                                 }}
                                 disabled={disabled || isEmpty}
                                 size="sm"
@@ -243,6 +254,10 @@ const Editor = ({
                         <Button
                             disabled={disabled || isEmpty}
                             onClick={() => {
+                                onSubmit({
+                                    body: JSON.stringify(quillRef.current?.getContents()),
+                                    image,
+                                })
                             }}
                             size="iconSm"
                             className={cn(
