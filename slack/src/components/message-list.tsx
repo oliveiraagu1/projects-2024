@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-import {GetMessagesReturnType} from "@/features/messages/use-get-messages";
+import {GetMessagesReturnType} from "@/features/messages/api/use-get-messages";
 import {differenceInMinutes, format, isToday, isYesterday} from "date-fns";
 import {Message} from "@/components/message";
 import {ChannelHero} from "@/components/channel-hero";
