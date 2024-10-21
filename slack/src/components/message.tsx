@@ -12,6 +12,7 @@ import {useRemoveMessage} from "@/features/messages/api/use-remove-message";
 import {useConfirm} from "@/hooks/use-confirm";
 import {useToggleReaction} from "@/features/reactions/api/use-toggle-reaction";
 import {Reactions} from "@/components/reactions";
+import {usePanel} from "@/hooks/use-panel";
 
 const Renderer = dynamic(() => import("@/components/renderer"), {ssr: false});
 const Editor = dynamic(() => import("@/components/editor"), {ssr: false});
@@ -22,7 +23,7 @@ interface MessageProps {
     authorImage?: string;
     authorName?: string;
     isAuthor: boolean;
-    reactions: Array<Omit<Doc<"reactions">, "memberId"> & { count: number, memberIds: Id<"members">[]}>;
+    reactions: Array<Omit<Doc<"reactions">, "memberId"> & { count: number, memberIds: Id<"members">[] }>;
     body: Doc<"messages">["body"];
     image: string | null | undefined;
     createdAt: Doc<"messages">["_creationTime"];
@@ -59,6 +60,8 @@ export const Message = ({
                             threadImage,
                             threadTimestamp,
                         }: MessageProps) => {
+    const {parentMessageId, onOpenMessage, onClose} = usePanel();
+
     const [ConfirmDialog, confirm] = useConfirm(
         "Delete message",
         "Are you sure you want to delete message? This cannot be undone"
@@ -66,7 +69,7 @@ export const Message = ({
 
     const {mutate: updateMessage, isPending: isUpdatingMessage} = useUpdateMessage();
     const {mutate: removeMessage, isPending: isRemovingMessage} = useRemoveMessage();
-    const { mutate: toggleReaction, isPending: isTogglingReaction} = useToggleReaction();
+    const {mutate: toggleReaction, isPending: isTogglingReaction} = useToggleReaction();
 
     const isPending = isUpdatingMessage;
 
@@ -90,6 +93,10 @@ export const Message = ({
         await removeMessage({id}, {
             onSuccess: () => {
                 toast.success("Message Deleted");
+
+                if (parentMessageId === id) {
+                    onClose();
+                }
             },
             onError: () => {
                 toast.error("Failed to delete message");
@@ -154,8 +161,7 @@ export const Message = ({
                             isAuthor={isAuthor}
                             isPending={isPending}
                             handleEdit={() => setEditing(id)}
-                            handleThread={() => {
-                            }}
+                            handleThread={() => onOpenMessage(id)}
                             handleDelete={handleRemove}
                             handleReaction={handleReaction}
                             hideThreadButton={hideThreadButton}
@@ -227,8 +233,7 @@ export const Message = ({
                         isAuthor={isAuthor}
                         isPending={isPending}
                         handleEdit={() => setEditing(id)}
-                        handleThread={() => {
-                        }}
+                        handleThread={() => onOpenMessage(id)}
                         handleDelete={handleRemove}
                         handleReaction={handleReaction}
                         hideThreadButton={hideThreadButton}
