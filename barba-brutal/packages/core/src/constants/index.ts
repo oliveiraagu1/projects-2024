@@ -1,5 +1,6 @@
-import clientes from './clientes'
-import profissionais from './profissionais'
-import servicos from './servicos'
+import customers from "./customers.constants";
+import professional from "./professionals.constants";
+import services from "./services.constants";
+const SLOT_TIME = 15
 
-export { clientes, profissionais, servicos }
+export  {SLOT_TIME, customers, professional, services}
