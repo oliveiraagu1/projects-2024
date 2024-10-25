@@ -71,15 +71,3 @@ yarn install
 5. Abra o navegador e acesse `http://localhost:3000`.
 This Turborepo includes the following packages/apps:
 
-## Experiência de Aprendizado
-Este projeto foi desenvolvido acompanhando a Formação Dev com o professor Leonardo Leitão. Durante o desenvolvimento, aprendi diversos conceitos de arquitetura limpa, super classes, TypeScript e boas práticas de programação, o que proporcionou uma experiência única como desenvolvedor.
-
-##  Contribuição
-Se você deseja contribuir com o projeto, sinta-se à vontade para abrir issues ou enviar pull requests.
-
-## Licença
-Este projeto está licenciado sob a licença MIT. Consulte o arquivo `LICENSE` para obter mais informações.
-
-<hr>
-
-Desenvolvido com ❤️por Luan Alves
