@@ -7,6 +7,7 @@ export class AppointmentController {
   constructor(private readonly repo: AppointmentRepository) {}
   @Post()
   create(@Body() appointment: Appointment) {
+    console.log(appointment);
     return this.repo.create(appointment);
   }
 
